@@ -1,9 +1,10 @@
 package groupid.terminarz.view;
 
+import groupid.terminarz.logic.DataBaseManager;
 import groupid.terminarz.logic.MyDateFormat;
 import groupid.terminarz.logic.MyEvent;
 import groupid.terminarz.logic.MyTimeFormat;
-import java.io.IOException;
+import static groupid.terminarz.view.SceneMaker.eventsManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
@@ -18,19 +19,17 @@ public class EventsTableView extends SceneMaker {
 
     @Override
     public Scene makeScene() {
-        ObservableList<MyEvent> lista = FXCollections.observableArrayList();
-
-        //temporaryyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
-        try {
-            lista.add(new MyEvent("chillera", new MyDateFormat(30, 9, 2021), new MyTimeFormat(15, 0)));
-            lista.add(new MyEvent("utopia", new MyDateFormat(5, 5, 1999), new MyTimeFormat(3, 9)));
-            lista.add(new MyEvent("tere", new MyDateFormat(11, 9, 2001), new MyTimeFormat(15, 45)));
-            lista.add(new MyEvent("fere", new MyDateFormat(12, 5, 2011), new MyTimeFormat(15, 123)));
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (eventsManager == null) {
+            eventsManager = new DataBaseManager();
         }
 
-        TableView<MyEvent> layout = new TableView<>(lista);
+        ObservableList<MyEvent> obsList = FXCollections.observableArrayList(eventsManager.getAllEvents().values());
+        //MyEvent[] events = (MyEvent[]) eventsManager.getAllEvents().values().toArray();
+        //for (MyEvent e : events) {
+        //    obsList.add(e);
+        //}
+
+        TableView<MyEvent> layout = new TableView<>(obsList);
 
         TableColumn<MyEvent, Integer> identity = new TableColumn<>("ID");
         identity.setCellValueFactory(new PropertyValueFactory<>("id"));
