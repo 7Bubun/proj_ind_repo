@@ -31,6 +31,10 @@ public class MyEvent {
         return n;
     }
 
+    public static void freeId(int id){
+        takenIdentities.remove(id);
+    }
+    
     public String getName() {
         return name;
     }

@@ -8,11 +8,13 @@ import javafx.stage.Stage;
 
 public class App extends Application {
 
-    SceneCreator creator;
+    private Stage mainStage;
+    private SceneCreator creator;
 
     @Override
     public void start(Stage stage) {
-        creator = new EventsTableView();
+        mainStage = stage;
+        creator = new EventsTableView(this);
         Scene scene = creator.createScene();
 
         stage.setScene(scene);
@@ -21,5 +23,10 @@ public class App extends Application {
 
     public static void main(String[] args) {
         launch();
+    }
+
+    public void refresh() {
+        Scene nextScene = creator.createScene();
+        mainStage.setScene(nextScene);
     }
 }

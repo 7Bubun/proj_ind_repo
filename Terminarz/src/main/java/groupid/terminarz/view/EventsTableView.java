@@ -1,6 +1,7 @@
 package groupid.terminarz.view;
 
-import groupid.terminarz.logic.DataBaseManager;
+import groupid.terminarz.App;
+import groupid.terminarz.logic.DataStorage;
 import groupid.terminarz.logic.MyDateFormat;
 import groupid.terminarz.logic.MyEvent;
 import groupid.terminarz.logic.MyTimeFormat;
@@ -17,10 +18,14 @@ import javafx.scene.layout.BorderPane;
 
 public class EventsTableView extends SceneCreator {
 
+    public EventsTableView(App mainGUI) {
+        super(mainGUI);
+    }
+
     @Override
     public Scene createScene() {
         if (eventsManager == null) {
-            eventsManager = new DataBaseManager();
+            eventsManager = new DataStorage();
         }
 
         ObservableList<MyEvent> obsList = FXCollections.observableArrayList(eventsManager.getAllEvents().values());
