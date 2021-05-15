@@ -8,14 +8,14 @@ public class MyEvent {
     private final static List<Integer> takenIdentities = new LinkedList<>();
     private final int id;
     private String name;
-    private MyDateFormat termin;
+    private MyDateFormat deadline;
     private MyTimeFormat time;
     private DayOfTheWeek dayOfTheWeek;
     private boolean regular;
 
-    public MyEvent(String name, MyDateFormat termin, MyTimeFormat time) {
+    public MyEvent(String name, MyDateFormat deadline, MyTimeFormat time) {
         this.name = name;
-        this.termin = termin;
+        this.deadline = deadline;
         this.time = time;
         id = nextIdentity();
     }
@@ -39,12 +39,12 @@ public class MyEvent {
         this.name = name;
     }
 
-    public MyDateFormat getTermin() {
-        return termin;
+    public MyDateFormat getDeadline() {
+        return deadline;
     }
 
-    public void setTermin(MyDateFormat termin) {
-        this.termin = termin;
+    public void setDeadline(MyDateFormat termin) {
+        this.deadline = termin;
     }
 
     public MyTimeFormat getTime() {

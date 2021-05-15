@@ -1,16 +1,19 @@
 package groupid.terminarz;
 
+import groupid.terminarz.view.EventsTableView;
+import groupid.terminarz.view.SceneCreator;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class App extends Application {
 
-    SceneHolder holder = new SceneHolder();
+    SceneCreator creator;
 
     @Override
     public void start(Stage stage) {
-        Scene scene = holder.getViewOfTable();
+        creator = new EventsTableView();
+        Scene scene = creator.createScene();
 
         stage.setScene(scene);
         stage.show();

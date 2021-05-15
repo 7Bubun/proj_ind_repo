@@ -4,7 +4,7 @@ import groupid.terminarz.logic.DataBaseManager;
 import groupid.terminarz.logic.MyDateFormat;
 import groupid.terminarz.logic.MyEvent;
 import groupid.terminarz.logic.MyTimeFormat;
-import static groupid.terminarz.view.SceneMaker.eventsManager;
+import static groupid.terminarz.view.SceneCreator.eventsManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
@@ -15,20 +15,15 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 
-public class EventsTableView extends SceneMaker {
+public class EventsTableView extends SceneCreator {
 
     @Override
-    public Scene makeScene() {
+    public Scene createScene() {
         if (eventsManager == null) {
             eventsManager = new DataBaseManager();
         }
 
         ObservableList<MyEvent> obsList = FXCollections.observableArrayList(eventsManager.getAllEvents().values());
-        //MyEvent[] events = (MyEvent[]) eventsManager.getAllEvents().values().toArray();
-        //for (MyEvent e : events) {
-        //    obsList.add(e);
-        //}
-
         TableView<MyEvent> layout = new TableView<>(obsList);
 
         TableColumn<MyEvent, Integer> identity = new TableColumn<>("ID");
@@ -38,7 +33,7 @@ public class EventsTableView extends SceneMaker {
         name.setCellValueFactory(new PropertyValueFactory<>("name"));
 
         TableColumn<MyEvent, MyDateFormat> deadline = new TableColumn<>("Termin");
-        deadline.setCellValueFactory(new PropertyValueFactory<>("termin"));
+        deadline.setCellValueFactory(new PropertyValueFactory<>("deadline"));
 
         TableColumn<MyEvent, MyTimeFormat> time = new TableColumn<>("Hour");
         time.setCellValueFactory(new PropertyValueFactory<>("time"));
@@ -49,7 +44,10 @@ public class EventsTableView extends SceneMaker {
         Label bottom = new Label("Dół");
         Label left = new Label("Lewo");
         Button right = new Button("Prawo");
-        right.setOnAction(e -> delete(layout));
+        right.setOnAction(e -> {
+            delete(layout);
+            showEditingOrAddingWindow();
+        });
 
         BorderPane mainLayout = new BorderPane();
         mainLayout.setCenter(layout);
@@ -61,9 +59,8 @@ public class EventsTableView extends SceneMaker {
         return new Scene(mainLayout, 800, 600);
     }
 
-    private void delete(javafx.scene.control.TableView<MyEvent> layout) {
+    private void delete(TableView<MyEvent> layout) {
         MyEvent itemToDelete = layout.getSelectionModel().getSelectedItem();
         layout.getItems().removeAll(itemToDelete);
     }
-
 }
