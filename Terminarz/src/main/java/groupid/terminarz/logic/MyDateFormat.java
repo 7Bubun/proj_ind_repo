@@ -28,18 +28,8 @@ public class MyDateFormat {
     @Override
     public String toString() {
         return String.valueOf(year)
-                + "-" + format(month)
-                + "-" + format(day);
-    }
-
-    private String format(int number) {
-        String result = String.valueOf(number);
-
-        if (number < 10) {
-            result = "0" + result;
-        }
-
-        return result;
+                + "-" + Utilities.format(month)
+                + "-" + Utilities.format(day);
     }
 
     public int getYear() {
