@@ -26,7 +26,7 @@ public class DataStorage {
         }
         */
     }
-    
+    /*
     public void addEvent(String name, int day, int month, int year, int hour, int minute) {
         try {
             MyEvent m = new MyEvent(name, new MyDateFormat(day, month, year), new MyTimeFormat(hour, minute));
@@ -41,7 +41,7 @@ public class DataStorage {
         allEvents.remove(id);
         MyEvent.freeId(id);
     }
-    
+    */
     public Map getAllEvents() {
         return allEvents;
     }

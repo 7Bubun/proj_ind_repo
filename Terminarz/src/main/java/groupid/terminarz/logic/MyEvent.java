@@ -5,7 +5,6 @@ import java.util.List;
 
 public class MyEvent {
 
-    private final static List<Integer> takenIdentities = new LinkedList<>();
     private final int id;
     private String name;
     private MyDateFormat deadline;
@@ -13,28 +12,13 @@ public class MyEvent {
     private DayOfTheWeek dayOfTheWeek;
     private boolean regular;
 
-    public MyEvent(String name, MyDateFormat deadline, MyTimeFormat time) {
+    public MyEvent(int id, MyDateFormat deadline, MyTimeFormat time, String name) {
         this.name = name;
         this.deadline = deadline;
         this.time = time;
-        id = nextIdentity();
+        this.id = id;
     }
 
-    private int nextIdentity() {
-        int n = 0;
-
-        while (takenIdentities.contains(n)) {
-            n++;
-        }
-
-        takenIdentities.add(n);
-        return n;
-    }
-
-    public static void freeId(int id){
-        takenIdentities.remove(id);
-    }
-    
     public String getName() {
         return name;
     }

@@ -1,7 +1,6 @@
 package groupid.terminarz.view;
 
 import groupid.terminarz.App;
-import groupid.terminarz.logic.DataStorage;
 import groupid.terminarz.logic.MyDateFormat;
 import groupid.terminarz.logic.MyEvent;
 import groupid.terminarz.logic.MyTimeFormat;
@@ -24,11 +23,7 @@ public class EventsTableView extends SceneCreator {
 
     @Override
     public Scene createScene() {
-        if (eventsManager == null) {
-            eventsManager = new DataStorage();
-        }
-
-        ObservableList<MyEvent> obsList = FXCollections.observableArrayList(eventsManager.getAllEvents().values());
+        ObservableList<MyEvent> obsList = FXCollections.observableArrayList(eventsManager.loadEvents());
         TableView<MyEvent> layout = new TableView<>(obsList);
 
         TableColumn<MyEvent, Integer> identity = new TableColumn<>("ID");
@@ -50,7 +45,6 @@ public class EventsTableView extends SceneCreator {
         Label left = new Label("Lewo");
         Button right = new Button("Prawo");
         right.setOnAction(e -> {
-            delete(layout);
             showEditingOrAddingWindow();
         });
 
@@ -63,9 +57,10 @@ public class EventsTableView extends SceneCreator {
 
         return new Scene(mainLayout, 800, 600);
     }
-
+    /*
     private void delete(TableView<MyEvent> layout) {
         MyEvent itemToDelete = layout.getSelectionModel().getSelectedItem();
         layout.getItems().removeAll(itemToDelete);
     }
+    */
 }
