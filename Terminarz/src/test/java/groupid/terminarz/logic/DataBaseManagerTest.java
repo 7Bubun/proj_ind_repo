@@ -24,7 +24,7 @@ public class DataBaseManagerTest {
     //one more
     @Test
     public void testLoadEvents() {
-        List<MyEvent> returnedList = testedObject.loadEvents();
+        List<MyEvent> returnedList = testedObject.loadEvents("co?");
         for (MyEvent event : returnedList) {
             System.out.println(event.getId());
             System.out.println(event.getDeadline());
