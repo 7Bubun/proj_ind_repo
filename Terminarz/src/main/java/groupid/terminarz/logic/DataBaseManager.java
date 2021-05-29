@@ -12,31 +12,29 @@ import java.util.List;
 public class DataBaseManager {
 
     private String url;
-    private String dbusername;
+    private String dbUsername;
     private String dbPassword;
-    private Connection conn;
+    private Statement statement;
 
     public DataBaseManager() {
         url = "jdbc:mysql://localhost:55555/Terminarz";
-        dbusername = "testuser0";
+        dbUsername = "testuser0";
         dbPassword = "123q";
 
         try {
-            conn = DriverManager.getConnection(url, dbusername, dbPassword);
+            Connection conn = DriverManager.getConnection(url, dbUsername, dbPassword);
+            statement = conn.createStatement();
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void addEvent(String name, MyDateFormat date, MyTimeFormat time) {
-        String sqlFormattedDatetime = "'" + date.toString() + " " + time.toString() + "'";
-
-        String query = "INSERT INTO EVENTS_TBL (DEADLINE, NAME_OF_EVENT) "
-                + "VALUES (" + sqlFormattedDatetime + ", '" + name + "')";
+    public void addUser(String username, String password) {
+        String query = "INSERT INTO USERS_TBL (USERNAME, PASS) "
+                + "VALUES ('" + username + "', '" + password + "')";
 
         try {
-            Statement statement = conn.createStatement();
             statement.executeUpdate(query);
 
         } catch (SQLException e) {
@@ -44,15 +42,46 @@ public class DataBaseManager {
         }
     }
 
-    public List<MyEvent> loadEvents() {
-        List<MyEvent> events = new ArrayList<>();
+    public List<String> loadUsernames() {
+        List<String> usernames = new ArrayList<>();
 
         try {
-            Statement statement = conn.createStatement();
-            ResultSet results = statement.executeQuery("SELECT * FROM EVENTS_TBL");
+            ResultSet results = statement.executeQuery("SELECT USERNAME FROM USERS_TBL");
 
             while (results.next()) {
-                int id = Integer.parseInt(results.getString(1));
+                usernames.add(results.getString(1));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return usernames;
+    }
+
+    public void addEvent(String name, MyDateFormat date, MyTimeFormat time, String username) {
+        String sqlFormattedDatetime = "'" + date.toString() + " " + time.toString() + "'";
+
+        String query = "INSERT INTO EVENTS_TBL (DEADLINE, NAME_OF_EVENT, USERNAME) "
+                + "VALUES (" + sqlFormattedDatetime + ", '" + name + "', '" + username + "')";
+
+        try {
+            statement.executeUpdate(query);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<MyEvent> loadEvents(String currentUser) {
+        List<MyEvent> events = new ArrayList<>();
+        String query = String.format("SELECT * FROM EVENTS_TBL WHERE USERNAME = '%s'", currentUser);
+
+        try {
+            ResultSet results = statement.executeQuery(query);
+
+            while (results.next()) {
+                int id = results.getInt(1);
                 MyDateFormat date = extractDate(results.getString(2));
                 MyTimeFormat time = extractTime(results.getString(2));
                 String name = results.getString(3);

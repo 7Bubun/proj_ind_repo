@@ -9,11 +9,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 
 public class EventsTableView extends SceneCreator {
 
@@ -23,7 +24,7 @@ public class EventsTableView extends SceneCreator {
 
     @Override
     public Scene createScene() {
-        ObservableList<MyEvent> obsList = FXCollections.observableArrayList(eventsManager.loadEvents());
+        ObservableList<MyEvent> obsList = FXCollections.observableArrayList(eventsManager.loadEvents(nameOfCurrentUser));
         TableView<MyEvent> layout = new TableView<>(obsList);
 
         TableColumn<MyEvent, Integer> identity = new TableColumn<>("ID");
@@ -40,20 +41,31 @@ public class EventsTableView extends SceneCreator {
 
         layout.getColumns().addAll(identity, name, deadline, time);
 
-        Label top = new Label("Góra");
-        Label bottom = new Label("Dół");
-        Label left = new Label("Lewo");
-        Button right = new Button("Prawo");
-        right.setOnAction(e -> {
-            showEditingOrAddingWindow();
+        ObservableList<String> usernames = FXCollections.observableArrayList(eventsManager.loadUsernames());
+        ComboBox<String> userChooser = new ComboBox<>(usernames);
+        
+        if(!nameOfCurrentUser.equals("-")) {
+            userChooser.setValue(nameOfCurrentUser);
+        }
+        
+        userChooser.setOnAction(e -> {
+            nameOfCurrentUser = userChooser.getValue();
+            mainGUI.refresh();
         });
+
+        Button addEventButton = new Button("Dodaj wydarzenie");
+        addEventButton.setOnAction(e -> showEditingOrAddingWindow());
+
+        Button addUserButton = new Button("Dodaj użytkownika");
+        addUserButton.setOnAction(e -> showUserAddingWindow());
+
+        //menubar in future?
+        FlowPane top = new FlowPane(addEventButton, addUserButton, userChooser);
+        top.minHeight(100);
 
         BorderPane mainLayout = new BorderPane();
         mainLayout.setCenter(layout);
         mainLayout.setTop(top);
-        mainLayout.setBottom(bottom);
-        mainLayout.setLeft(left);
-        mainLayout.setRight(right);
 
         return new Scene(mainLayout, 800, 600);
     }
@@ -62,5 +74,5 @@ public class EventsTableView extends SceneCreator {
         MyEvent itemToDelete = layout.getSelectionModel().getSelectedItem();
         layout.getItems().removeAll(itemToDelete);
     }
-    */
+     */
 }
