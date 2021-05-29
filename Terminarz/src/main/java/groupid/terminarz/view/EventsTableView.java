@@ -52,7 +52,7 @@ public class EventsTableView extends SceneCreator {
         }
 
         userChooser.setOnAction(e -> {
-            nameOfCurrentUser = userChooser.getValue();
+            showLoggingInWindow(userChooser.getValue());
             mainGUI.refresh();
         });
 

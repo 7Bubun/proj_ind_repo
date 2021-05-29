@@ -106,6 +106,28 @@ public class DataBaseManager {
         return events;
     }
 
+    public boolean checkPassword(String username, String password) {
+        String query = String.format("SELECT PASS FROM USERS_TBL WHERE USERNAME='%s'", username);
+
+        try {
+            ResultSet results = statement.executeQuery(query);
+            String correctPassword;
+
+            if (results.next()) {
+                correctPassword = results.getString(1);
+
+                if (password.equals(correctPassword)) {
+                    return true;
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
     private MyDateFormat extractDate(String sqlDatetime) throws IOException {
         int year = Integer.parseInt(sqlDatetime.substring(0, 4));
         int month = Integer.parseInt(sqlDatetime.substring(5, 7));
