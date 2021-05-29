@@ -36,22 +36,22 @@ public abstract class SceneCreator {
         FlowPane layout = new FlowPane();
 
         TextField name = new TextField();
-        layout.getChildren().add(name);
+        name.setPromptText("nazwa");
 
         TextField day = new TextField();
-        layout.getChildren().add(day);
+        day.setPromptText("dzień");
 
         TextField month = new TextField();
-        layout.getChildren().add(month);
+        month.setPromptText("miesiąc");
 
         TextField year = new TextField();
-        layout.getChildren().add(year);
+        year.setPromptText("rok");
 
         TextField hour = new TextField();
-        layout.getChildren().add(hour);
+        hour.setPromptText("godzina");
 
         TextField minute = new TextField();
-        layout.getChildren().add(minute);
+        minute.setPromptText("minuta");
 
         Button confirmingButton = new Button("Potwierdź");
         confirmingButton.setOnAction(e -> {
@@ -77,8 +77,7 @@ public abstract class SceneCreator {
             window.close();
         });
 
-        layout.getChildren().add(confirmingButton);
-
+        layout.getChildren().addAll(name, day, month, year, hour, minute, confirmingButton);
         window.setScene(new Scene(layout, 400, 200));
         window.show();
     }
