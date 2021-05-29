@@ -63,31 +63,22 @@ public class DataBaseManager {
         String query = "INSERT INTO EVENTS_TBL (DEADLINE, NAME_OF_EVENT, USERNAME) "
                 + "VALUES (" + makeSqlDatetimeFormat(date, time) + ", '" + name + "', '" + username + "')";
 
-        try {
-            statement.executeUpdate(query);
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        executeTheQuery(query);
     }
 
     public void updateEvent(MyEvent editedEvent) {
-        String query = String.format("UPDATE EVENTS_TBL SET DEADLINE=%s, NAME_OF_EVENT='%s' WHERE ID=%d",
+        String query = String.format(
+                "UPDATE EVENTS_TBL SET DEADLINE=%s, NAME_OF_EVENT='%s' WHERE ID=%d",
                 makeSqlDatetimeFormat(editedEvent.getDeadline(), editedEvent.getTime()),
                 editedEvent.getName(),
                 editedEvent.getId()
         );
 
-        try {
-            statement.executeUpdate(query);
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        executeTheQuery(query);
     }
-    
-    public void deleteEvent(){
-        
+
+    public void deleteEvent(int id) {
+        executeTheQuery(String.format("DELETE FROM EVENTS_TBL WHERE ID=%d", id));
     }
 
     public List<MyEvent> loadEvents(String currentUser) {
@@ -132,5 +123,14 @@ public class DataBaseManager {
 
     private String makeSqlDatetimeFormat(MyDateFormat date, MyTimeFormat time) {
         return "'" + date.toString() + " " + time.toString() + "'";
+    }
+
+    private void executeTheQuery(String query) {
+        try {
+            statement.executeUpdate(query);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
