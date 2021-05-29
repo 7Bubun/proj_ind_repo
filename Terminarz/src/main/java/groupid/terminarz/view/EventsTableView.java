@@ -17,34 +17,37 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 
 public class EventsTableView extends SceneCreator {
-
+    
     public EventsTableView(App mainGUI) {
         super(mainGUI);
     }
-
+    
     @Override
     public Scene createScene() {
         ObservableList<MyEvent> obsList = FXCollections.observableArrayList(eventsManager.loadEvents(nameOfCurrentUser));
         TableView<MyEvent> layout = new TableView<>(obsList);
-
+        
         TableColumn<MyEvent, Integer> identity = new TableColumn<>("ID");
         identity.setCellValueFactory(new PropertyValueFactory<>("id"));
-
+        
         TableColumn<MyEvent, String> name = new TableColumn<>("Nazwa");
         name.setCellValueFactory(new PropertyValueFactory<>("name"));
-
+        
         TableColumn<MyEvent, MyDateFormat> deadline = new TableColumn<>("Termin");
         deadline.setCellValueFactory(new PropertyValueFactory<>("deadline"));
-
-        TableColumn<MyEvent, MyTimeFormat> time = new TableColumn<>("Hour");
+        
+        TableColumn<MyEvent, MyTimeFormat> time = new TableColumn<>("Godzina");
         time.setCellValueFactory(new PropertyValueFactory<>("time"));
-
-        layout.getColumns().addAll(identity, name, deadline, time);
-
+        
+        TableColumn<MyEvent, String> dayOfWeek = new TableColumn<>("Dzień tygodnia");
+        dayOfWeek.setCellValueFactory(new PropertyValueFactory<>("dayOfTheWeek"));
+        
+        layout.getColumns().addAll(identity, name, deadline, time, dayOfWeek);
+        
         ObservableList<String> usernames = FXCollections.observableArrayList(eventsManager.loadUsernames());
         ComboBox<String> userChooser = new ComboBox<>(usernames);
         
-        if(!nameOfCurrentUser.equals("-")) {
+        if (!nameOfCurrentUser.equals("-")) {
             userChooser.setValue(nameOfCurrentUser);
         }
         
@@ -52,21 +55,27 @@ public class EventsTableView extends SceneCreator {
             nameOfCurrentUser = userChooser.getValue();
             mainGUI.refresh();
         });
-
+        
         Button addEventButton = new Button("Dodaj wydarzenie");
-        addEventButton.setOnAction(e -> showEditingOrAddingWindow());
-
+        addEventButton.setOnAction(e -> showEditingOrAddingWindow(null));
+        
+        Button editEventButton = new Button("Edytuj wydarzenie");
+        editEventButton.setOnAction(e -> {
+            MyEvent editedEvent = layout.getSelectionModel().getSelectedItem();
+            showEditingOrAddingWindow(editedEvent);
+        });
+        
         Button addUserButton = new Button("Dodaj użytkownika");
         addUserButton.setOnAction(e -> showUserAddingWindow());
 
         //menubar in future?
-        FlowPane top = new FlowPane(addEventButton, addUserButton, userChooser);
+        FlowPane top = new FlowPane(addEventButton, editEventButton, addUserButton, userChooser);
         top.minHeight(100);
-
+        
         BorderPane mainLayout = new BorderPane();
         mainLayout.setCenter(layout);
         mainLayout.setTop(top);
-
+        
         return new Scene(mainLayout, 800, 600);
     }
     /*

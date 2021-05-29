@@ -60,10 +60,8 @@ public class DataBaseManager {
     }
 
     public void addEvent(String name, MyDateFormat date, MyTimeFormat time, String username) {
-        String sqlFormattedDatetime = "'" + date.toString() + " " + time.toString() + "'";
-
         String query = "INSERT INTO EVENTS_TBL (DEADLINE, NAME_OF_EVENT, USERNAME) "
-                + "VALUES (" + sqlFormattedDatetime + ", '" + name + "', '" + username + "')";
+                + "VALUES (" + makeSqlDatetimeFormat(date, time) + ", '" + name + "', '" + username + "')";
 
         try {
             statement.executeUpdate(query);
@@ -71,6 +69,25 @@ public class DataBaseManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void updateEvent(MyEvent editedEvent) {
+        String query = String.format("UPDATE EVENTS_TBL SET DEADLINE=%s, NAME_OF_EVENT='%s' WHERE ID=%d",
+                makeSqlDatetimeFormat(editedEvent.getDeadline(), editedEvent.getTime()),
+                editedEvent.getName(),
+                editedEvent.getId()
+        );
+
+        try {
+            statement.executeUpdate(query);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void deleteEvent(){
+        
     }
 
     public List<MyEvent> loadEvents(String currentUser) {
@@ -111,5 +128,9 @@ public class DataBaseManager {
         int minute = Integer.parseInt(sqlDatetime.substring(14, 16));
 
         return new MyTimeFormat(hour, minute);
+    }
+
+    private String makeSqlDatetimeFormat(MyDateFormat date, MyTimeFormat time) {
+        return "'" + date.toString() + " " + time.toString() + "'";
     }
 }
