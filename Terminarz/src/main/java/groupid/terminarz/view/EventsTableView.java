@@ -27,35 +27,26 @@ public class EventsTableView extends SceneCreator {
         ObservableList<MyEvent> obsList = FXCollections.observableArrayList(eventsManager.loadEvents(nameOfCurrentUser));
         TableView<MyEvent> layout = new TableView<>(obsList);
         layout.setFixedCellSize(50);
-   
-        //TableColumn<MyEvent, Integer> identity = new TableColumn<>("ID");
-        //identity.setCellValueFactory(new PropertyValueFactory<>("id"));
-        
 
         TableColumn<MyEvent, String> name = new TableColumn<>("Nazwa");
         name.setCellValueFactory(new PropertyValueFactory<>("name"));
-        //name.setMinWidth(30);
-        //name.setStyle("-fx-alignment: CENTER;");
-        
+
         TableColumn<MyEvent, MyDateFormat> deadline = new TableColumn<>("Termin");
         deadline.setCellValueFactory(new PropertyValueFactory<>("deadline"));
-        //deadline.setMinWidth(30);
-        
+
         TableColumn<MyEvent, MyTimeFormat> time = new TableColumn<>("Godzina");
         time.setCellValueFactory(new PropertyValueFactory<>("time"));
-        //time.setMinWidth(30);
-        
+
         TableColumn<MyEvent, String> dayOfWeek = new TableColumn<>("Dzień tygodnia");
         dayOfWeek.setCellValueFactory(new PropertyValueFactory<>("dayOfTheWeek"));
-        //dayOfWeek.setMinWidth(30);
-        
+
         layout.getColumns().addAll(name, deadline, time, dayOfWeek);
 
-        for(TableColumn col : layout.getColumns()) {
+        for (TableColumn col : layout.getColumns()) {
             col.setMinWidth(200);
             col.setStyle("-fx-alignment: CENTER; -fx-font-size: large;");
         }
-        
+
         ObservableList<String> usernames = FXCollections.observableArrayList(eventsManager.loadUsernames());
         ComboBox<String> userChooser = new ComboBox<>(usernames);
 
@@ -102,10 +93,4 @@ public class EventsTableView extends SceneCreator {
 
         return new Scene(mainLayout, 800, 600);
     }
-    /*
-    private void delete(TableView<MyEvent> layout) {
-        MyEvent itemToDelete = layout.getSelectionModel().getSelectedItem();
-        layout.getItems().removeAll(itemToDelete);
-    }
-     */
 }
