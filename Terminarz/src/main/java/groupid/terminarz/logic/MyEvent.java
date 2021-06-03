@@ -53,6 +53,11 @@ public class MyEvent {
         }
     }
 
+    @Override
+    public String toString(){
+        return name + time;
+    }
+    
     public String getName() {
         return name;
     }

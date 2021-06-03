@@ -10,7 +10,6 @@ import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToolBar;
@@ -41,23 +40,11 @@ public class EventsTableView extends SceneCreator {
         TableColumn<MyEvent, String> dayOfWeek = new TableColumn<>("Dzień tygodnia");
         dayOfWeek.setCellValueFactory(new PropertyValueFactory<>("dayOfTheWeek"));
 
-        layout.getColumns().addAll(name, deadline, time, dayOfWeek);
-
-        for (TableColumn col : layout.getColumns()) {
-            col.setMinWidth(200);
-            col.setStyle("-fx-alignment: CENTER; -fx-font-size: large;");
-        }
-
-        ObservableList<String> usernames = FXCollections.observableArrayList(eventsManager.loadUsernames());
-        ComboBox<String> userChooser = new ComboBox<>(usernames);
-
-        if (!nameOfCurrentUser.equals("-")) {
-            userChooser.setValue(nameOfCurrentUser);
-        }
-
-        userChooser.setOnAction(e -> {
-            showLoggingInWindow(userChooser.getValue());
-            mainGUI.refresh();
+        ObservableList<TableColumn<MyEvent, ?>> columns = layout.getColumns();
+        columns.addAll(name, deadline, time, dayOfWeek);
+        columns.stream().forEach(e -> {
+            e.setMinWidth(199);
+            e.setStyle("-fx-alignment: CENTER; -fx-font-size: large;");
         });
 
         Button addEventButton = new Button("Dodaj wydarzenie");
@@ -79,27 +66,20 @@ public class EventsTableView extends SceneCreator {
             }
         });
 
-        Button addUserButton = new Button("Dodaj użytkownika");
-        addUserButton.setOnAction(e -> showUserAddingWindow());
+        ComboBox<String> userChooser = prepareUserChooser();
+        Button addUserButton = prepareAddUserButton();
+        Button changeViewButton = prepareChangeViewButton(new MonthView(mainGUI));
 
-        Button changeViewButton = new Button("Zmień widok");
-        changeViewButton.setOnAction(e -> mainGUI.changeScene(new MonthView(mainGUI)));
-
-        Label usersLabel = new Label("Użytkownik:");
-
-        ToolBar top = new ToolBar(
+        BorderPane mainLayout = new BorderPane();
+        mainLayout.setCenter(layout);
+        mainLayout.setTop(new ToolBar(
                 addEventButton,
                 editEventButton,
                 deleteEventButton,
                 addUserButton,
-                changeViewButton,
-                usersLabel,
-                userChooser
-        );
-
-        BorderPane mainLayout = new BorderPane();
-        mainLayout.setCenter(layout);
-        mainLayout.setTop(top);
+                userChooser,
+                changeViewButton
+        ));
 
         return new Scene(mainLayout, 800, 600);
     }

@@ -1,14 +1,30 @@
 package groupid.terminarz.view;
 
 import groupid.terminarz.App;
+import groupid.terminarz.logic.MyEvent;
+import groupid.terminarz.logic.Utilities;
+import static groupid.terminarz.view.SceneCreator.eventsManager;
+import static groupid.terminarz.view.SceneCreator.nameOfCurrentUser;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import static java.util.stream.Collectors.toList;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 public class MonthView extends SceneCreator {
 
@@ -29,26 +45,51 @@ public class MonthView extends SceneCreator {
         int monthsLength = currentMonth.length(leapYear);
         int daysLeft = monthsLength;
 
+        List<MyEvent> events = eventsManager.loadEvents(nameOfCurrentUser);
+        List<MyEvent> eventsFromCurrentMonth = events.stream().filter(
+                e -> e.getDeadline().getMonth() == currentMonth.getValue()
+        ).collect(toList());
+
+        Map<Integer, List<MyEvent>> daysAndEvents = new HashMap<>();
+
         GridPane layout = new GridPane();
         Label[] numberLabels = new Label[monthsLength];
-        Label[] daysOfWeek = new Label[7];
-
-        daysOfWeek[0] = new Label("Poniedziałek");
-        daysOfWeek[1] = new Label("Wtorek");
-        daysOfWeek[2] = new Label("Środa");
-        daysOfWeek[3] = new Label("Czwartek");
-        daysOfWeek[4] = new Label("Piątek");
-        daysOfWeek[5] = new Label("Sobota");
-        daysOfWeek[6] = new Label("Niedziela");
+        String[] daysOfWeek = {
+            "Poniedziałek",
+            "Wtorek",
+            "Środa",
+            "Czwartek",
+            "Piątek",
+            "Sobota",
+            "Niedziela"
+        };
 
         for (int i = 1; i <= monthsLength; i++) {
-            Label lab = new Label(String.valueOf(i));
-            lab.setMinSize(80, 60);
+            Label lab = new Label(Utilities.addSpace(i));
+            lab.setMinSize(105, 80);
+            lab.setAlignment(Pos.TOP_LEFT);
             numberLabels[i - 1] = lab;
         }
 
+        eventsFromCurrentMonth.stream().forEach(e -> {
+            int day = e.getDeadline().getDay();
+            numberLabels[day - 1].setTextFill(Color.GOLDENROD);
+            numberLabels[day - 1].setOnMouseClicked(f -> showDaysEvents(daysAndEvents.get(day)));
+
+            if (daysAndEvents.containsKey(day)) {
+                daysAndEvents.get(day).add(e);
+
+            } else {
+                List<MyEvent> list = new ArrayList<>();
+                list.add(e);
+                daysAndEvents.put(day, list);
+            }
+        });
+
         for (int i = 0; i < 7; i++) {
-            GridPane.setConstraints(daysOfWeek[i], i, 0);
+            Label tmpLab = new Label(Utilities.addSpace(daysOfWeek[i]));
+            GridPane.setConstraints(tmpLab, i, 0);
+            layout.getChildren().add(tmpLab);
         }
 
         for (int i = startingDay - 1; i < 7; i++) {
@@ -63,15 +104,32 @@ public class MonthView extends SceneCreator {
             }
         }
 
+        //layout.setBackground(new Background(new BackgroundFill(Color.LIGHTSKYBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
         layout.setGridLinesVisible(true);
         layout.setPadding(new Insets(25));
-        layout.getChildren().addAll(daysOfWeek);
         layout.getChildren().addAll(numberLabels);
 
         BorderPane mainLayout = new BorderPane();
         mainLayout.setCenter(layout);
-        mainLayout.setTop(new Label(currentMonth.toString()));
+        mainLayout.setBottom(new Label(currentMonth.toString()));
+        mainLayout.setTop(new ToolBar(
+                prepareAddUserButton(),
+                prepareUserChooser(),
+                prepareChangeViewButton(new EventsTableView(mainGUI))
+        ));
 
         return new Scene(mainLayout, 800, 600);
+    }
+
+    private void showDaysEvents(List<MyEvent> eventsOfDay) {
+        ObservableList<String> obsListOfEvents = FXCollections.observableArrayList();
+        eventsOfDay.stream().forEach(e -> obsListOfEvents.add(e.toString()));
+
+        ListView<String> layout = new ListView(obsListOfEvents);
+
+        Scene scene = new Scene(layout, 400, 300);
+        Stage window = new Stage();
+        window.setScene(scene);
+        window.show();
     }
 }

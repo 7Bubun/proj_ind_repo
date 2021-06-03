@@ -3,9 +3,12 @@ package groupid.terminarz.view;
 import groupid.terminarz.App;
 import groupid.terminarz.logic.*;
 import java.io.IOException;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
@@ -167,5 +170,34 @@ public abstract class SceneCreator {
         window.setScene(new Scene(layout, 400, 200));
         window.initModality(Modality.APPLICATION_MODAL);
         window.show();
+    }
+
+    protected ComboBox<String> prepareUserChooser() {
+        ObservableList<String> usernames = FXCollections.observableArrayList(eventsManager.loadUsernames());
+        ComboBox<String> userChooser = new ComboBox<>(usernames);
+        userChooser.setPromptText("Użytkownik");
+
+        if (!nameOfCurrentUser.equals("-")) {
+            userChooser.setValue(nameOfCurrentUser);
+        }
+
+        userChooser.setOnAction(e -> {
+            showLoggingInWindow(userChooser.getValue());
+            mainGUI.refresh();
+        });
+
+        return userChooser;
+    }
+
+    protected Button prepareAddUserButton() {
+        Button addUserButton = new Button("Dodaj użytkownika");
+        addUserButton.setOnAction(e -> showUserAddingWindow());
+        return addUserButton;
+    }
+
+    protected Button prepareChangeViewButton(SceneCreator nextView) {
+        Button changeViewButton = new Button("Zmień widok");
+        changeViewButton.setOnAction(e -> mainGUI.changeScene(nextView));
+        return changeViewButton;
     }
 }

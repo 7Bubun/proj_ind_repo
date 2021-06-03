@@ -11,4 +11,12 @@ public class Utilities {
 
         return result;
     }
+    
+    public static String addSpace(String base) {
+        return " " + base;
+    }
+    
+    public static String addSpace(int base) {
+        return " " + String.valueOf(base);
+    }
 }
