@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public abstract class SceneCreator {
@@ -98,7 +99,7 @@ public abstract class SceneCreator {
 
         layout.getChildren().addAll(name, day, month, year, hour, minute, confirmingButton);
         window.setScene(new Scene(layout, 400, 200));
-        window.setAlwaysOnTop(true);
+        window.initModality(Modality.APPLICATION_MODAL);
         window.show();
     }
 
@@ -134,6 +135,7 @@ public abstract class SceneCreator {
 
         layout.getChildren().addAll(usernameTextField, passwordTextField, passwordAgainTextField, confirmButton);
         window.setScene(new Scene(layout, 400, 200));
+        window.initModality(Modality.APPLICATION_MODAL);
         window.show();
     }
 
@@ -163,6 +165,7 @@ public abstract class SceneCreator {
 
         layout.getChildren().addAll(passwordTextField, confirmButton);
         window.setScene(new Scene(layout, 400, 200));
+        window.initModality(Modality.APPLICATION_MODAL);
         window.show();
     }
 }

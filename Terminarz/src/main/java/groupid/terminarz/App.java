@@ -29,6 +29,11 @@ public class App extends Application {
         launch();
     }
     
+    public void changeScene(SceneCreator creator){
+        this.creator = creator;
+        refresh();
+    }
+    
     public void refresh() {
         Scene nextScene = creator.createScene();
         mainStage.setScene(nextScene);
