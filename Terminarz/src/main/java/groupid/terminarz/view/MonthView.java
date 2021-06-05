@@ -1,7 +1,9 @@
 package groupid.terminarz.view;
 
 import groupid.terminarz.App;
+import groupid.terminarz.logic.MyDateFormat;
 import groupid.terminarz.logic.MyEvent;
+import groupid.terminarz.logic.MyTimeFormat;
 import groupid.terminarz.logic.Utilities;
 import static groupid.terminarz.view.SceneCreator.eventsManager;
 import static groupid.terminarz.view.SceneCreator.nameOfCurrentUser;
@@ -18,15 +20,24 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class MonthView extends SceneCreator {
+
+    private static int monthDiff = 0;
+    private Stage eventsOfDayWindow;
+    private List<MyEvent> eventsOnCertainDay;
+    private MyDateFormat dateOfCertainDay;
 
     public MonthView(App mainGUI) {
         super(mainGUI);
@@ -38,19 +49,20 @@ public class MonthView extends SceneCreator {
         Month currentMonth = today.getMonth();
         int currentYear = today.getYear();
         boolean leapYear = currentYear % 4 == 0;
+        int valueOfCertainMonth = currentMonth.getValue() + monthDiff;
+        Month certainMonth = LocalDate.of(currentYear, valueOfCertainMonth, 1).getMonth();
 
-        LocalDate firstDayOfMonth = LocalDate.of(currentYear, currentMonth, 1);
+        LocalDate firstDayOfMonth = LocalDate.of(currentYear, valueOfCertainMonth, 1);
         DayOfWeek dayOfWeekOfFirstDay = DayOfWeek.from(firstDayOfMonth);
         int startingDay = dayOfWeekOfFirstDay.getValue();
-        int monthsLength = currentMonth.length(leapYear);
+        int monthsLength = certainMonth.length(leapYear);
         int daysLeft = monthsLength;
 
         List<MyEvent> events = eventsManager.loadEvents(nameOfCurrentUser);
-        List<MyEvent> eventsFromCurrentMonth = events.stream().filter(
-                e -> e.getDeadline().getMonth() == currentMonth.getValue()
+        List<MyEvent> eventsFromCertainMonth = events.stream().filter(
+                e -> e.getDeadline().getMonth() == certainMonth.getValue()
+                && e.getDeadline().getYear() == currentYear
         ).collect(toList());
-
-        Map<Integer, List<MyEvent>> daysAndEvents = new HashMap<>();
 
         GridPane layout = new GridPane();
         Label[] numberLabels = new Label[monthsLength];
@@ -71,10 +83,15 @@ public class MonthView extends SceneCreator {
             numberLabels[i - 1] = lab;
         }
 
-        eventsFromCurrentMonth.stream().forEach(e -> {
+        Map<Integer, List<MyEvent>> daysAndEvents = new HashMap<>();
+        eventsFromCertainMonth.stream().forEach(e -> {
             int day = e.getDeadline().getDay();
             numberLabels[day - 1].setTextFill(Color.GOLDENROD);
-            numberLabels[day - 1].setOnMouseClicked(f -> showDaysEvents(daysAndEvents.get(day)));
+            numberLabels[day - 1].setOnMouseClicked(f -> {
+                eventsOnCertainDay = daysAndEvents.get(day);
+                dateOfCertainDay = eventsOnCertainDay.get(0).getDeadline();
+                showEventsOfDay();
+            });
 
             if (daysAndEvents.containsKey(day)) {
                 daysAndEvents.get(day).add(e);
@@ -106,12 +123,26 @@ public class MonthView extends SceneCreator {
 
         //layout.setBackground(new Background(new BackgroundFill(Color.LIGHTSKYBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
         layout.setGridLinesVisible(true);
-        layout.setPadding(new Insets(25));
+        layout.setPadding(new Insets(10));
         layout.getChildren().addAll(numberLabels);
+
+        Button previousMonthButton = new Button("<");
+        previousMonthButton.setOnAction(eh -> {
+            monthDiff--;
+            mainGUI.refresh();
+        });
+
+        Button nextMonthButton = new Button(">");
+        nextMonthButton.setOnAction(eh -> {
+            monthDiff++;
+            mainGUI.refresh();
+        });
 
         BorderPane mainLayout = new BorderPane();
         mainLayout.setCenter(layout);
-        mainLayout.setBottom(new Label(currentMonth.toString()));
+        mainLayout.setBottom(new Label(certainMonth.toString()));
+        mainLayout.setLeft(previousMonthButton);
+        mainLayout.setRight(nextMonthButton);
         mainLayout.setTop(new ToolBar(
                 prepareAddUserButton(),
                 prepareUserChooser(),
@@ -121,15 +152,81 @@ public class MonthView extends SceneCreator {
         return new Scene(mainLayout, 800, 600);
     }
 
-    private void showDaysEvents(List<MyEvent> eventsOfDay) {
-        ObservableList<String> obsListOfEvents = FXCollections.observableArrayList();
-        eventsOfDay.stream().forEach(e -> obsListOfEvents.add(e.toString()));
-
-        ListView<String> layout = new ListView(obsListOfEvents);
-
-        Scene scene = new Scene(layout, 400, 300);
+    @Override
+    public void showEventAddingWindow() {
         Stage window = new Stage();
-        window.setScene(scene);
-        window.show();
+        FlowPane layout = new FlowPane();
+
+        TextField name = new TextField();
+        name.setPromptText("nazwa");
+
+        TextField hour = new TextField();
+        hour.setPromptText("godzina");
+
+        TextField minute = new TextField();
+        minute.setPromptText("minuta");
+
+        Button confirmingButton = new Button("Potwierdź");
+        confirmingButton.setOnAction(eh -> {
+            MyTimeFormat time = new MyTimeFormat(
+                    Integer.parseInt(hour.getText()),
+                    Integer.parseInt(minute.getText())
+            );
+
+            eventsManager.addEvent(name.getText(), dateOfCertainDay, time, nameOfCurrentUser);
+            mainGUI.refresh();
+            refreshEventsOfDay();
+            window.close();
+        });
+
+        layout.getChildren().addAll(name, hour, minute, confirmingButton);
+        initWindow(window, layout);
+    }
+
+    private void showEventsOfDay() {
+        BorderPane mainLayout = prepareEventsOfDayLayout();
+        MyEvent firstEvent = eventsOnCertainDay.get(0);
+
+        Scene scene = new Scene(mainLayout, 400, 300);
+        eventsOfDayWindow = new Stage();
+        eventsOfDayWindow.setTitle("Wydarzenia " + firstEvent.getDeadline());
+        eventsOfDayWindow.setScene(scene);
+        eventsOfDayWindow.initModality(Modality.APPLICATION_MODAL);
+        eventsOfDayWindow.show();
+    }
+
+    private BorderPane prepareEventsOfDayLayout() {
+        ObservableList<String> obsListOfEvents = FXCollections.observableArrayList();
+        eventsOnCertainDay.stream().forEach(e -> obsListOfEvents.add(e.toString()));
+        ListView<String> centerLayout = new ListView(obsListOfEvents);
+
+        Button addEventButton = new Button("Dodaj");
+        addEventButton.setOnAction(eh -> {
+            showEventAddingWindow();
+        });
+
+        Button editEventButton = new Button("Edytuj");
+        editEventButton.setOnAction(eh -> {
+            MyEvent editedEvent = eventsOnCertainDay.get(centerLayout.getSelectionModel().getSelectedIndex());
+            showEventEditingWindow(editedEvent);
+        });
+
+        Button deleteEventButton = new Button("Usuń");
+        deleteEventButton.setOnAction(eh -> {
+            MyEvent editedEvent = eventsOnCertainDay.get(centerLayout.getSelectionModel().getSelectedIndex());
+            eventsManager.deleteEvent(editedEvent.getId());
+            refreshEventsOfDay();
+        });
+
+        BorderPane mainLayout = new BorderPane();
+        mainLayout.setCenter(centerLayout);
+        mainLayout.setTop(new ToolBar(addEventButton, editEventButton, deleteEventButton));
+        return mainLayout;
+    }
+
+    private void refreshEventsOfDay() {
+        eventsOnCertainDay = eventsManager.loadEvents(nameOfCurrentUser, dateOfCertainDay);
+        BorderPane mainLayout = prepareEventsOfDayLayout();
+        eventsOfDayWindow.setScene(new Scene(mainLayout, 400, 300));
     }
 }

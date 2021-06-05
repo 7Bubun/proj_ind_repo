@@ -82,28 +82,18 @@ public class DataBaseManager {
     }
 
     public List<MyEvent> loadEvents(String currentUser) {
-        List<MyEvent> events = new ArrayList<>();
         String query = String.format("SELECT * FROM EVENTS_TBL WHERE USERNAME = '%s'", currentUser);
+        return takeResults(query);
+    }
 
-        try {
-            ResultSet results = statement.executeQuery(query);
+    public List<MyEvent> loadEvents(String currentUser, MyDateFormat certainDate) {
+        String query = String.format(
+                "SELECT * FROM EVENTS_TBL WHERE (USERNAME = '%s') AND (DEADLINE REGEXP '^%s')",
+                currentUser,
+                certainDate
+        );
 
-            while (results.next()) {
-                int id = results.getInt(1);
-                MyDateFormat date = extractDate(results.getString(2));
-                MyTimeFormat time = extractTime(results.getString(2));
-                String name = results.getString(3);
-                events.add(new MyEvent(id, date, time, name));
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-
-        return events;
+        return takeResults(query);
     }
 
     public boolean checkPassword(String username, String password) {
@@ -128,6 +118,30 @@ public class DataBaseManager {
         return false;
     }
 
+    private List<MyEvent> takeResults(String query) {
+        List<MyEvent> list = new ArrayList<>();
+
+        try {
+            ResultSet results = statement.executeQuery(query);
+
+            while (results.next()) {
+                int id = results.getInt(1);
+                MyDateFormat date = extractDate(results.getString(2));
+                MyTimeFormat time = extractTime(results.getString(2));
+                String name = results.getString(3);
+                list.add(new MyEvent(id, date, time, name));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+
+        return list;
+    }
+
     private MyDateFormat extractDate(String sqlDatetime) throws IOException {
         int year = Integer.parseInt(sqlDatetime.substring(0, 4));
         int month = Integer.parseInt(sqlDatetime.substring(5, 7));
@@ -144,7 +158,7 @@ public class DataBaseManager {
     }
 
     private String makeSqlDatetimeFormat(MyDateFormat date, MyTimeFormat time) {
-        return "'" + date.toString() + " " + time.toString() + "'";
+        return "'" + date + " " + time + "'";
     }
 
     private void executeTheQuery(String query) {
