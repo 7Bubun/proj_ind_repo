@@ -17,7 +17,7 @@ public class DataBaseManager {
     private final Statement statement;
 
     public DataBaseManager() throws SQLException {
-        url = "jdbc:mysql://localhost:55555/Terminarz";
+        url = "jdbc:mysql://192.168.0.120:55555/Terminarz";
         dbUsername = "testuser0";
         dbPassword = "123q";
 
