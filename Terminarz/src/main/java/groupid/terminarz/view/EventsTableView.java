@@ -5,6 +5,8 @@ import groupid.terminarz.logic.MyDateFormat;
 import groupid.terminarz.logic.MyEvent;
 import groupid.terminarz.logic.MyTimeFormat;
 import static groupid.terminarz.view.SceneCreator.eventsManager;
+import java.io.IOException;
+import java.sql.SQLException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
@@ -18,12 +20,12 @@ import javafx.scene.layout.BorderPane;
 
 public class EventsTableView extends SceneCreator {
 
-    public EventsTableView(App mainGUI) {
+    public EventsTableView(App mainGUI) throws SQLException {
         super(mainGUI);
     }
 
     @Override
-    public Scene createScene() {
+    public Scene createScene() throws IOException, SQLException {
         ObservableList<MyEvent> obsList = FXCollections.observableArrayList(eventsManager.loadEvents(nameOfCurrentUser));
         TableView<MyEvent> layout = new TableView<>(obsList);
         layout.setFixedCellSize(50);

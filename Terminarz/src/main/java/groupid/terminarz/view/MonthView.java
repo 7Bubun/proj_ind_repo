@@ -7,6 +7,8 @@ import groupid.terminarz.logic.MyTimeFormat;
 import groupid.terminarz.logic.Utilities;
 import static groupid.terminarz.view.SceneCreator.eventsManager;
 import static groupid.terminarz.view.SceneCreator.nameOfCurrentUser;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
@@ -39,12 +41,12 @@ public class MonthView extends SceneCreator {
     private List<MyEvent> eventsOnCertainDay;
     private MyDateFormat dateOfCertainDay;
 
-    public MonthView(App mainGUI) {
+    public MonthView(App mainGUI) throws SQLException {
         super(mainGUI);
     }
 
     @Override
-    public Scene createScene() {
+    public Scene createScene() throws IOException, SQLException {
         LocalDate today = LocalDate.now();
         Month currentMonth = today.getMonth();
         int currentYear = today.getYear();
@@ -90,7 +92,13 @@ public class MonthView extends SceneCreator {
             numberLabels[day - 1].setOnMouseClicked(f -> {
                 eventsOnCertainDay = daysAndEvents.get(day);
                 dateOfCertainDay = eventsOnCertainDay.get(0).getDeadline();
-                showEventsOfDay();
+
+                try {
+                    showEventsOfDay();
+
+                } catch (IOException | SQLException exc) {
+                    Utilities.popUpErrorBox("Nie udało się załadować danych.");
+                }
             });
 
             if (daysAndEvents.containsKey(day)) {
@@ -121,7 +129,6 @@ public class MonthView extends SceneCreator {
             }
         }
 
-        //layout.setBackground(new Background(new BackgroundFill(Color.LIGHTSKYBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
         layout.setGridLinesVisible(true);
         layout.setPadding(new Insets(10));
         layout.getChildren().addAll(numberLabels);
@@ -173,17 +180,22 @@ public class MonthView extends SceneCreator {
                     Integer.parseInt(minute.getText())
             );
 
-            eventsManager.addEvent(name.getText(), dateOfCertainDay, time, nameOfCurrentUser);
-            mainGUI.refresh();
-            refreshEventsOfDay();
-            window.close();
+            try {
+                eventsManager.addEvent(name.getText(), dateOfCertainDay, time, nameOfCurrentUser);
+                mainGUI.refresh();
+                refreshEventsOfDay();
+                window.close();
+
+            } catch (IOException | SQLException e) {
+                Utilities.popUpErrorBox("Nie udało się załadować danych.");
+            }
         });
 
         layout.getChildren().addAll(name, hour, minute, confirmingButton);
         initWindow(window, layout);
     }
 
-    private void showEventsOfDay() {
+    private void showEventsOfDay() throws IOException, SQLException {
         BorderPane mainLayout = prepareEventsOfDayLayout();
         MyEvent firstEvent = eventsOnCertainDay.get(0);
 
@@ -195,7 +207,7 @@ public class MonthView extends SceneCreator {
         eventsOfDayWindow.show();
     }
 
-    private BorderPane prepareEventsOfDayLayout() {
+    private BorderPane prepareEventsOfDayLayout() throws IOException, SQLException {
         ObservableList<String> obsListOfEvents = FXCollections.observableArrayList();
         eventsOnCertainDay.stream().forEach(e -> obsListOfEvents.add(e.toString()));
         ListView<String> centerLayout = new ListView(obsListOfEvents);
@@ -214,8 +226,14 @@ public class MonthView extends SceneCreator {
         Button deleteEventButton = new Button("Usuń");
         deleteEventButton.setOnAction(eh -> {
             MyEvent editedEvent = eventsOnCertainDay.get(centerLayout.getSelectionModel().getSelectedIndex());
-            eventsManager.deleteEvent(editedEvent.getId());
-            refreshEventsOfDay();
+
+            try {
+                eventsManager.deleteEvent(editedEvent.getId());
+                refreshEventsOfDay();
+
+            } catch (IOException | SQLException e) {
+                Utilities.popUpErrorBox("Wystąpił błąd.");
+            }
         });
 
         BorderPane mainLayout = new BorderPane();
@@ -224,9 +242,16 @@ public class MonthView extends SceneCreator {
         return mainLayout;
     }
 
-    private void refreshEventsOfDay() {
+    private void refreshEventsOfDay() throws IOException, SQLException {
         eventsOnCertainDay = eventsManager.loadEvents(nameOfCurrentUser, dateOfCertainDay);
-        BorderPane mainLayout = prepareEventsOfDayLayout();
-        eventsOfDayWindow.setScene(new Scene(mainLayout, 400, 300));
+
+        if (!eventsOnCertainDay.isEmpty()) {
+            BorderPane mainLayout = prepareEventsOfDayLayout();
+            eventsOfDayWindow.setScene(new Scene(mainLayout, 400, 300));
+            return;
+        }
+
+        eventsOfDayWindow.close();
+        mainGUI.refresh();
     }
 }

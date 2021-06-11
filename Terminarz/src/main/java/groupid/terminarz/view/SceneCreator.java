@@ -3,6 +3,7 @@ package groupid.terminarz.view;
 import groupid.terminarz.App;
 import groupid.terminarz.logic.*;
 import java.io.IOException;
+import java.sql.SQLException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Parent;
@@ -22,7 +23,7 @@ public abstract class SceneCreator {
     protected static String nameOfCurrentUser = "-";
     protected final App mainGUI;
 
-    public SceneCreator(App mainGUI) {
+    public SceneCreator(App mainGUI) throws SQLException {
         this.mainGUI = mainGUI;
 
         if (eventsManager == null) {
@@ -30,7 +31,7 @@ public abstract class SceneCreator {
         }
     }
 
-    public Scene createScene() {
+    public Scene createScene() throws IOException, SQLException {
         return new Scene(new StackPane(), 20, 20);
     }
 
@@ -53,12 +54,11 @@ public abstract class SceneCreator {
 
                 eventsManager.addEvent(name.getText(), updatedDeadline, updatedTime, nameOfCurrentUser);
                 mainGUI.refresh();
+                window.close();
 
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
+            } catch (IOException | NumberFormatException exc) {
+                Utilities.popUpErrorBox("Podane dane nie są poprawne.");
             }
-
-            window.close();
         });
 
         FlowPane layout = new FlowPane();
@@ -100,7 +100,7 @@ public abstract class SceneCreator {
                 mainGUI.refresh();
 
             } catch (IOException ioe) {
-                ioe.printStackTrace();
+                Utilities.popUpErrorBox("Podane dane nie są poprawne.");
             }
 
             window.close();
@@ -162,9 +162,7 @@ public abstract class SceneCreator {
                 window.close();
 
             } else {
-                Alert messageBox = new Alert(Alert.AlertType.ERROR);
-                messageBox.setContentText("To się nazywa cyberprzestępstwo! xD");
-                messageBox.show();
+                Utilities.popUpErrorBox("Podane dane logowania są niepoprawne.");
             }
         });
 
@@ -179,7 +177,7 @@ public abstract class SceneCreator {
         window.show();
     }
 
-    protected ComboBox<String> prepareUserChooser() {
+    protected ComboBox<String> prepareUserChooser() throws SQLException {
         ObservableList<String> usernames = FXCollections.observableArrayList(eventsManager.loadUsernames());
         ComboBox<String> userChooser = new ComboBox<>(usernames);
         userChooser.setPromptText("Użytkownik");

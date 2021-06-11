@@ -11,49 +11,33 @@ import java.util.List;
 
 public class DataBaseManager {
 
-    private String url;
-    private String dbUsername;
-    private String dbPassword;
-    private Statement statement;
+    private final String url;
+    private final String dbUsername;
+    private final String dbPassword;
+    private final Statement statement;
 
-    public DataBaseManager() {
+    public DataBaseManager() throws SQLException {
         url = "jdbc:mysql://localhost:55555/Terminarz";
         dbUsername = "testuser0";
         dbPassword = "123q";
 
-        try {
-            Connection conn = DriverManager.getConnection(url, dbUsername, dbPassword);
-            statement = conn.createStatement();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        Connection conn = DriverManager.getConnection(url, dbUsername, dbPassword);
+        statement = conn.createStatement();
     }
 
     public void addUser(String username, String password) {
         String query = "INSERT INTO USERS_TBL (USERNAME, PASS) "
                 + "VALUES ('" + username + "', '" + password + "')";
 
-        try {
-            statement.executeUpdate(query);
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        executeTheQuery(query);
     }
 
-    public List<String> loadUsernames() {
+    public List<String> loadUsernames() throws SQLException {
         List<String> usernames = new ArrayList<>();
+        ResultSet results = statement.executeQuery("SELECT USERNAME FROM USERS_TBL");
 
-        try {
-            ResultSet results = statement.executeQuery("SELECT USERNAME FROM USERS_TBL");
-
-            while (results.next()) {
-                usernames.add(results.getString(1));
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+        while (results.next()) {
+            usernames.add(results.getString(1));
         }
 
         return usernames;
@@ -81,12 +65,12 @@ public class DataBaseManager {
         executeTheQuery(String.format("DELETE FROM EVENTS_TBL WHERE ID=%d", id));
     }
 
-    public List<MyEvent> loadEvents(String currentUser) {
+    public List<MyEvent> loadEvents(String currentUser) throws IOException, SQLException {
         String query = String.format("SELECT * FROM EVENTS_TBL WHERE USERNAME = '%s'", currentUser);
         return takeResults(query);
     }
 
-    public List<MyEvent> loadEvents(String currentUser, MyDateFormat certainDate) {
+    public List<MyEvent> loadEvents(String currentUser, MyDateFormat certainDate) throws IOException, SQLException {
         String query = String.format(
                 "SELECT * FROM EVENTS_TBL WHERE (USERNAME = '%s') AND (DEADLINE REGEXP '^%s')",
                 currentUser,
@@ -112,31 +96,22 @@ public class DataBaseManager {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            Utilities.popUpErrorBox("Wystąpił błąd.");
         }
 
         return false;
     }
 
-    private List<MyEvent> takeResults(String query) {
+    private List<MyEvent> takeResults(String query) throws IOException, SQLException {
         List<MyEvent> list = new ArrayList<>();
+        ResultSet results = statement.executeQuery(query);
 
-        try {
-            ResultSet results = statement.executeQuery(query);
-
-            while (results.next()) {
-                int id = results.getInt(1);
-                MyDateFormat date = extractDate(results.getString(2));
-                MyTimeFormat time = extractTime(results.getString(2));
-                String name = results.getString(3);
-                list.add(new MyEvent(id, date, time, name));
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
+        while (results.next()) {
+            int id = results.getInt(1);
+            MyDateFormat date = extractDate(results.getString(2));
+            MyTimeFormat time = extractTime(results.getString(2));
+            String name = results.getString(3);
+            list.add(new MyEvent(id, date, time, name));
         }
 
         return list;
@@ -166,7 +141,7 @@ public class DataBaseManager {
             statement.executeUpdate(query);
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            Utilities.popUpErrorBox("Błąd. Nie udało się wykonać tej operacji.");
         }
     }
 }
