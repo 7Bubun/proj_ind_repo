@@ -1,7 +1,6 @@
 package groupid.terminarz.logic;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
+import groupid.terminarz.Utilities;
 
 public class MyEvent {
 
@@ -16,48 +15,14 @@ public class MyEvent {
         this.deadline = deadline;
         this.time = time;
         this.id = id;
-
-        DayOfWeek dayOfWeek = DayOfWeek.from(LocalDate.of(deadline.getYear(), deadline.getMonth(), deadline.getDay()));
-
-        switch (dayOfWeek) {
-            case MONDAY:
-                dayOfTheWeek = "poniedziałek";
-                break;
-
-            case TUESDAY:
-                dayOfTheWeek = "wtorek";
-                break;
-
-            case WEDNESDAY:
-                dayOfTheWeek = "środa";
-                break;
-
-            case THURSDAY:
-                dayOfTheWeek = "czwartek";
-                break;
-
-            case FRIDAY:
-                dayOfTheWeek = "piątek";
-                break;
-
-            case SATURDAY:
-                dayOfTheWeek = "sobota";
-                break;
-
-            case SUNDAY:
-                dayOfTheWeek = "niedziela";
-                break;
-
-            default:
-                throw new Error("MOTYLA NOGA!");
-        }
+        this.dayOfTheWeek = Utilities.translateDayOfWeek(deadline);
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return name + time;
     }
-    
+
     public String getName() {
         return name;
     }

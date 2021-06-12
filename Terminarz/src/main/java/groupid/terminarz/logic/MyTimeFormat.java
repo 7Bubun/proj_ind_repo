@@ -1,5 +1,7 @@
 package groupid.terminarz.logic;
 
+import groupid.terminarz.Utilities;
+
 public class MyTimeFormat {
 
     private int hour;

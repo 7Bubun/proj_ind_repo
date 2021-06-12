@@ -1,5 +1,6 @@
 package groupid.terminarz.logic;
 
+import groupid.terminarz.Utilities;
 import java.io.IOException;
 import java.util.Arrays;
 

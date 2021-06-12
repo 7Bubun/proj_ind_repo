@@ -1,5 +1,6 @@
 package groupid.terminarz.view;
 
+import groupid.terminarz.Utilities;
 import groupid.terminarz.App;
 import groupid.terminarz.logic.*;
 import java.io.IOException;
@@ -201,6 +202,14 @@ public abstract class SceneCreator {
         window.show();
     }
 
+    protected GridPane prepareGridPane() {
+        GridPane gp = new GridPane();
+        gp.setPadding(new Insets(25));
+        gp.setVgap(5);
+        gp.setHgap(5);
+        return gp;
+    }
+
     protected ComboBox<String> prepareUserChooser() throws SQLException {
         ObservableList<String> usernames = FXCollections.observableArrayList(eventsManager.loadUsernames());
         ComboBox<String> userChooser = new ComboBox<>(usernames);
@@ -218,21 +227,21 @@ public abstract class SceneCreator {
         return userChooser;
     }
 
-    protected Button prepareAddEventButton(){
+    protected Button prepareAddEventButton() {
         Button addEventButton = new Button("Dodaj wydarzenie");
-        addEventButton.setOnAction(e -> showEventAddingWindow());
+        addEventButton.setOnAction(eh -> showEventAddingWindow());
         return addEventButton;
     }
-    
+
     protected Button prepareAddUserButton() {
         Button addUserButton = new Button("Dodaj użytkownika");
-        addUserButton.setOnAction(e -> showUserAddingWindow());
+        addUserButton.setOnAction(eh -> showUserAddingWindow());
         return addUserButton;
     }
 
     protected Button prepareChangeViewButton(SceneCreator nextView) {
         Button changeViewButton = new Button("Zmień widok");
-        changeViewButton.setOnAction(e -> mainGUI.changeScene(nextView));
+        changeViewButton.setOnAction(eh -> mainGUI.changeScene(nextView));
         return changeViewButton;
     }
 
@@ -280,14 +289,6 @@ public abstract class SceneCreator {
 
         Label[] labels = {name, day, month, year, hour, minute};
         return labels;
-    }
-
-    private GridPane prepareGridPane() {
-        GridPane gp = new GridPane();
-        gp.setPadding(new Insets(25));
-        gp.setVgap(5);
-        gp.setHgap(5);
-        return gp;
     }
 
     private MyDateFormat extractDateFromTextFields(TextField[] textfields) throws IOException {

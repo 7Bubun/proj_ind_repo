@@ -28,6 +28,7 @@ public class EventsTableView extends SceneCreator {
     public Scene createScene() throws IOException, SQLException {
         ObservableList<MyEvent> obsList = FXCollections.observableArrayList(eventsManager.loadEvents(nameOfCurrentUser));
         TableView<MyEvent> layout = new TableView<>(obsList);
+        layout.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         layout.setFixedCellSize(50);
 
         TableColumn<MyEvent, String> name = new TableColumn<>("Nazwa");

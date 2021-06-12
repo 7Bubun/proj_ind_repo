@@ -1,6 +1,5 @@
 package groupid.terminarz;
 
-import groupid.terminarz.logic.Utilities;
 import groupid.terminarz.view.EventsTableView;
 import groupid.terminarz.view.SceneCreator;
 import java.io.IOException;
