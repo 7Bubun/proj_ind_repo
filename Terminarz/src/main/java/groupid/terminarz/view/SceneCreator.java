@@ -221,7 +221,6 @@ public abstract class SceneCreator {
 
         userChooser.setOnAction(e -> {
             showLoggingInWindow(userChooser.getValue());
-            mainGUI.refresh();
         });
 
         return userChooser;
