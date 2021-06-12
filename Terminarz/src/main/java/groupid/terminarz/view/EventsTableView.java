@@ -49,9 +49,6 @@ public class EventsTableView extends SceneCreator {
             e.setStyle("-fx-alignment: CENTER; -fx-font-size: large;");
         });
 
-        Button addEventButton = new Button("Dodaj wydarzenie");
-        addEventButton.setOnAction(e -> showEventAddingWindow());
-
         Button editEventButton = new Button("Edytuj wydarzenie");
         editEventButton.setOnAction(e -> {
             MyEvent editedEvent = layout.getSelectionModel().getSelectedItem();
@@ -69,6 +66,7 @@ public class EventsTableView extends SceneCreator {
         });
 
         ComboBox<String> userChooser = prepareUserChooser();
+        Button addEventButton = prepareAddEventButton();
         Button addUserButton = prepareAddUserButton();
         Button changeViewButton = prepareChangeViewButton(new MonthView(mainGUI));
 

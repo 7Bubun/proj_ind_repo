@@ -151,6 +151,7 @@ public class MonthView extends SceneCreator {
         mainLayout.setLeft(previousMonthButton);
         mainLayout.setRight(nextMonthButton);
         mainLayout.setTop(new ToolBar(
+                prepareAddEventButton(),
                 prepareAddUserButton(),
                 prepareUserChooser(),
                 prepareChangeViewButton(new EventsTableView(mainGUI))
@@ -192,7 +193,14 @@ public class MonthView extends SceneCreator {
         });
 
         layout.getChildren().addAll(name, hour, minute, confirmingButton);
-        initWindow(window, layout);
+        initWindow(window, layout, "Dodawanie wydarzenia", 250);
+    }
+
+    @Override
+    protected Button prepareAddEventButton() {
+        Button aeButton = new Button("Dodaj wydarzenie");
+        aeButton.setOnAction(eh -> super.showEventAddingWindow());
+        return aeButton;
     }
 
     private void showEventsOfDay() throws IOException, SQLException {
