@@ -23,11 +23,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
@@ -174,82 +172,13 @@ public class MonthView extends SceneCreator {
     }
 
     @Override
-    public void showEventAddingWindow() {
-        Stage window = new Stage();
-        GridPane layout = prepareGridPane();
-        Control[] controls = prepareControls();
-
-        TextField nameField = (TextField) controls[3];
-        TextField hourField = (TextField) controls[4];
-        TextField minuteField = (TextField) controls[5];
-        Button confirmingButton = (Button) controls[6];
-
-        confirmingButton.setOnAction(eh -> {
-            try {
-                MyTimeFormat time = new MyTimeFormat(
-                        Integer.parseInt(hourField.getText()),
-                        Integer.parseInt(minuteField.getText())
-                );
-
-                eventsManager.addEvent(nameField.getText(), dateOfCertainDay, time, nameOfCurrentUser);
-                mainGUI.refresh();
-                refreshEventsOfDay();
-                window.close();
-
-            } catch (IOException | SQLException e) {
-                Utilities.popUpErrorBox("Nie udało się załadować danych.");
-            }
-        });
-
-        layout.getChildren().addAll(controls);
-        initWindow(window, layout, "Dodawanie wydarzenia", 150);
-    }
-
-    @Override
-    public void showEventEditingWindow(MyEvent editedEvent) {
-        Stage window = new Stage();
-        GridPane layout = prepareGridPane();
-        Control[] controls = prepareControls();
-
-        TextField nameField = (TextField) controls[3];
-        nameField.setText(editedEvent.getName());
-
-        TextField hourField = (TextField) controls[4];
-        hourField.setText(String.valueOf(editedEvent.getTime().getHour()));
-
-        TextField minuteField = (TextField) controls[5];
-        minuteField.setText(String.valueOf(editedEvent.getTime().getMinute()));
-
-        Button confirmingButton = (Button) controls[6];
-
-        confirmingButton.setOnAction(eh -> {
-            try {
-                MyTimeFormat time = new MyTimeFormat(
-                        Integer.parseInt(hourField.getText()),
-                        Integer.parseInt(minuteField.getText())
-                );
-
-                editedEvent.setName(nameField.getText());
-                editedEvent.setTime(time);
-
-                eventsManager.updateEvent(editedEvent);
-                mainGUI.refresh();
-                refreshEventsOfDay();
-                window.close();
-
-            } catch (IOException | SQLException e) {
-                Utilities.popUpErrorBox("Nie udało się załadować danych.");
-            }
-        });
-
-        layout.getChildren().addAll(controls);
-        initWindow(window, layout, "Dodawanie wydarzenia", 150);
-    }
-
-    @Override
     protected Button prepareAddEventButton() {
         Button aeButton = new Button("Dodaj wydarzenie");
-        aeButton.setOnAction(eh -> super.showEventAddingWindow());
+        aeButton.setOnAction(eh -> {
+            smallWindow = new EventAddingWindow(this);
+            smallWindow.appear();
+        });
+
         return aeButton;
     }
 
@@ -285,13 +214,16 @@ public class MonthView extends SceneCreator {
 
         Button addEventButton = new Button("Dodaj");
         addEventButton.setOnAction(eh -> {
-            showEventAddingWindow();
+            smallWindow = new DailyEventsAddingWindow(this);
+            smallWindow.appear();
         });
 
         Button editEventButton = new Button("Edytuj");
         editEventButton.setOnAction(eh -> {
             MyEvent editedEvent = centerLayout.getSelectionModel().getSelectedItem();
-            showEventEditingWindow(editedEvent);
+
+            smallWindow = new DailyEventsEditingWindow(this);
+            smallWindow.appear(editedEvent);
         });
 
         Button deleteEventButton = new Button("Usuń");
@@ -313,7 +245,7 @@ public class MonthView extends SceneCreator {
         return mainLayout;
     }
 
-    private void refreshEventsOfDay() throws IOException, SQLException {
+    void refreshEventsOfDay() throws IOException, SQLException {
         eventsOfCertainDay = eventsManager.loadEvents(nameOfCurrentUser, dateOfCertainDay);
 
         if (!eventsOfCertainDay.isEmpty()) {
@@ -326,33 +258,7 @@ public class MonthView extends SceneCreator {
         mainGUI.refresh();
     }
 
-    private Control[] prepareControls() {
-        Label nameLabel = new Label("Nazwa:");
-        Label hourLabel = new Label("Godzina:");
-        Label minuteLabel = new Label("Minuta:");
-
-        TextField nameTextField = new TextField();
-        TextField hourTextField = new TextField();
-        TextField minuteTextField = new TextField();
-
-        Button confirmingButton = new Button("Potwierdź");
-
-        GridPane.setConstraints(nameLabel, 0, 0);
-        GridPane.setConstraints(hourLabel, 0, 1);
-        GridPane.setConstraints(minuteLabel, 0, 2);
-        GridPane.setConstraints(nameTextField, 1, 0);
-        GridPane.setConstraints(hourTextField, 1, 1);
-        GridPane.setConstraints(minuteTextField, 1, 2);
-        GridPane.setConstraints(confirmingButton, 1, 3);
-
-        return new Control[]{
-            nameLabel,
-            hourLabel,
-            minuteLabel,
-            nameTextField,
-            hourTextField,
-            minuteTextField,
-            confirmingButton
-        };
+    public MyDateFormat getDateOfCertainDay() {
+        return dateOfCertainDay;
     }
 }
