@@ -15,21 +15,6 @@
             <artifactId>javafx-controls</artifactId>
             <version>13</version>
         </dependency>
-        
-        <!--not sure whether it is really required-->
-        <dependency>    
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-graphics</artifactId>
-            <version>13</version>
-        </dependency>
-        
-        <!--not sure whether it is really required-->
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-base</artifactId>
-            <version>13</version>
-        </dependency>
-        
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
