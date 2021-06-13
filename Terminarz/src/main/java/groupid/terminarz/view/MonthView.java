@@ -166,7 +166,8 @@ public class MonthView extends SceneCreator {
                 prepareAddEventButton(),
                 prepareAddUserButton(),
                 prepareUserChoosingButton(),
-                prepareChangeViewButton(new EventsTableView(mainGUI))
+                prepareChangeViewButton(new EventsTableView(mainGUI)),
+                prepareHelpButton()
         ));
 
         return new Scene(mainLayout, 800, 600);

@@ -65,20 +65,16 @@ public class EventsTableView extends SceneCreator {
             }
         });
 
-        Button userChooser = prepareUserChoosingButton();
-        Button addEventButton = prepareAddEventButton();
-        Button addUserButton = prepareAddUserButton();
-        Button changeViewButton = prepareChangeViewButton(new MonthView(mainGUI));
-
         BorderPane mainLayout = new BorderPane();
         mainLayout.setCenter(layout);
         mainLayout.setTop(new ToolBar(
-                addEventButton,
+                prepareAddEventButton(),
                 editEventButton,
                 deleteEventButton,
-                addUserButton,
-                userChooser,
-                changeViewButton
+                prepareAddUserButton(),
+                prepareUserChoosingButton(),
+                prepareChangeViewButton(new MonthView(mainGUI)),
+                prepareHelpButton()
         ));
 
         return new Scene(mainLayout, 800, 600);

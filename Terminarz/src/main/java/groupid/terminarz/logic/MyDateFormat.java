@@ -1,7 +1,6 @@
 package groupid.terminarz.logic;
 
 import groupid.terminarz.Utilities;
-import java.io.IOException;
 import java.util.Arrays;
 
 public class MyDateFormat {
@@ -12,13 +11,13 @@ public class MyDateFormat {
     private int month;
     private int day;
 
-    public MyDateFormat(int day, int month, int year) throws IOException {
+    public MyDateFormat(int day, int month, int year) {
         if (day <= 0 || month <= 0 || month > 12 || year < 0
                 || (Arrays.binarySearch(months30, month) > 0 && day > 30)
                 || (Arrays.binarySearch(months31, month) > 0 && day > 31)
                 || (month == 2 && day > 29)) {
 
-            throw new IOException("Podana data jest niepoprawna.");
+            throw new IllegalArgumentException("Podana data jest niepoprawna.");
         }
 
         this.day = day;

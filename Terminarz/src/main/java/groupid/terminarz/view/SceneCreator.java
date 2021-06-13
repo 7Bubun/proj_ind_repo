@@ -46,14 +46,19 @@ public abstract class SceneCreator {
         GridPane.setConstraints(confirmingButton, 1, 6);
         confirmingButton.setOnAction(e -> {
             try {
-                MyDateFormat updatedDeadline = extractDateFromTextFields(textFields);
-                MyTimeFormat updatedTime = extractTimeFromTextFields(textFields);
+                String name = textFields[0].getText();
+                MyDateFormat deadline = extractDateFromTextFields(textFields);
+                MyTimeFormat time = extractTimeFromTextFields(textFields);
 
-                eventsManager.addEvent(textFields[0].getText(), updatedDeadline, updatedTime, nameOfCurrentUser);
+                if (name.length() > 20) {
+                    throw new IOException();
+                }
+
+                eventsManager.addEvent(name, deadline, time, nameOfCurrentUser);
                 mainGUI.refresh();
                 window.close();
 
-            } catch (IOException | NumberFormatException exc) {
+            } catch (IOException | IllegalArgumentException exc) {
                 Utilities.popUpErrorBox("Podane dane nie są poprawne.");
             }
         });
@@ -91,17 +96,22 @@ public abstract class SceneCreator {
         GridPane.setConstraints(confirmingButton, 1, 6);
         confirmingButton.setOnAction(e -> {
             try {
+                String updatedName = name.getText();
                 MyDateFormat updatedDeadline = extractDateFromTextFields(textFields);
                 MyTimeFormat updatedTime = extractTimeFromTextFields(textFields);
 
-                editedEvent.setName(name.getText());
+                if (updatedName.length() > 20) {
+                    throw new IOException();
+                }
+
+                editedEvent.setName(updatedName);
                 editedEvent.setDeadline(updatedDeadline);
                 editedEvent.setTime(updatedTime);
                 eventsManager.updateEvent(editedEvent);
                 mainGUI.refresh();
                 window.close();
 
-            } catch (IOException | NumberFormatException exc) {
+            } catch (IOException | IllegalArgumentException exc) {
                 Utilities.popUpErrorBox("Podane dane nie są poprawne.");
             }
         });
@@ -188,21 +198,39 @@ public abstract class SceneCreator {
         });
 
         GridPane layout = prepareGridPane();
-        GridPane.setConstraints(loginLabel, 0, 0);
-        GridPane.setConstraints(passwordLabel, 0, 1);
-        GridPane.setConstraints(loginTextField, 1, 0);
-        GridPane.setConstraints(passwordTextField, 1, 1);
-        GridPane.setConstraints(confirmButton, 1, 2);
-
-        layout.getChildren().addAll(
-                loginLabel,
-                passwordLabel,
-                loginTextField,
-                passwordTextField,
-                confirmButton
-        );
+        layout.add(loginLabel, 0, 0);
+        layout.add(passwordLabel, 0, 1);
+        layout.add(loginTextField, 1, 0);
+        layout.add(passwordTextField, 1, 1);
+        layout.add(confirmButton, 1, 2);
 
         initWindow(window, layout, "Logowanie", 200);
+    }
+
+    public void showHelpWindow() {
+        String[] labelTexts = {
+            "Dane wydarzenia:",
+            "Nazwa - maks 20 znaków",
+            "Dzień - liczba",
+            "Miesiąc - liczba",
+            "Rok - liczba",
+            "Godzina - liczba",
+            "Minuta - liczba",
+            "",
+            "Dane użytkownika:",
+            "Login - maksymalnie 20 znaków",
+            "Hasło - maksymalnie 30 znaków"
+        };
+
+        GridPane layout = prepareGridPane();
+
+        for (int i = 0; i < labelTexts.length; i++) {
+            Label tmpLab = new Label(labelTexts[i]);
+            layout.add(tmpLab, 0, i);
+        }
+
+        Stage window = new Stage();
+        initWindow(window, layout, "Pomoc", 300);
     }
 
     protected void initWindow(Stage window, Parent layout, String title, int height) {
@@ -243,6 +271,12 @@ public abstract class SceneCreator {
     protected Button prepareChangeViewButton(SceneCreator nextView) {
         Button changeViewButton = new Button("Zmień widok");
         changeViewButton.setOnAction(eh -> mainGUI.changeScene(nextView));
+        return changeViewButton;
+    }
+
+    protected Button prepareHelpButton() {
+        Button changeViewButton = new Button("Pomoc");
+        changeViewButton.setOnAction(eh -> showHelpWindow());
         return changeViewButton;
     }
 
