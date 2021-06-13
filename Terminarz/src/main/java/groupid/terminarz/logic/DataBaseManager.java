@@ -18,8 +18,8 @@ public class DataBaseManager {
     private final Statement statement;
 
     public DataBaseManager() throws SQLException {
-        url = "jdbc:mysql://192.168.0.120:55555/Terminarz";
-        dbUsername = "testuser0";
+        url = "jdbc:mysql://192.168.0.120:55555/timetable";
+        dbUsername = "timetable_app";
         dbPassword = "123q";
 
         Connection conn = DriverManager.getConnection(url, dbUsername, dbPassword);

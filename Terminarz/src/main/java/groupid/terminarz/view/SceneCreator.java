@@ -5,14 +5,11 @@ import groupid.terminarz.App;
 import groupid.terminarz.logic.*;
 import java.io.IOException;
 import java.sql.SQLException;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -165,15 +162,19 @@ public abstract class SceneCreator {
         initWindow(window, layout, "Dodawanie użytkownika", 180);
     }
 
-    public void showLoggingInWindow(String username) {
+    public void showLoggingInWindow() {
         Stage window = new Stage();
 
-        TextField passwordTextField = new TextField();
+        Label loginLabel = new Label("Login:");
+        Label passwordLabel = new Label("Hasło:");
+        TextField loginTextField = new TextField();
+        TextField passwordTextField = new PasswordField();
         Button confirmButton = new Button("Zatwierdź");
 
         passwordTextField.setPromptText("Hasło");
 
-        confirmButton.setOnAction(e -> {
+        confirmButton.setOnAction(eh -> {
+            String username = loginTextField.getText();
             String password = passwordTextField.getText();
 
             if (eventsManager.checkPassword(username, password)) {
@@ -187,10 +188,20 @@ public abstract class SceneCreator {
         });
 
         GridPane layout = prepareGridPane();
-        GridPane.setConstraints(passwordTextField, 0, 0);
-        GridPane.setConstraints(confirmButton, 0, 1);
+        GridPane.setConstraints(loginLabel, 0, 0);
+        GridPane.setConstraints(passwordLabel, 0, 1);
+        GridPane.setConstraints(loginTextField, 1, 0);
+        GridPane.setConstraints(passwordTextField, 1, 1);
+        GridPane.setConstraints(confirmButton, 1, 2);
 
-        layout.getChildren().addAll(passwordTextField, confirmButton);
+        layout.getChildren().addAll(
+                loginLabel,
+                passwordLabel,
+                loginTextField,
+                passwordTextField,
+                confirmButton
+        );
+
         initWindow(window, layout, "Logowanie", 200);
     }
 
@@ -210,18 +221,9 @@ public abstract class SceneCreator {
         return gp;
     }
 
-    protected ComboBox<String> prepareUserChooser() throws SQLException {
-        ObservableList<String> usernames = FXCollections.observableArrayList(eventsManager.loadUsernames());
-        ComboBox<String> userChooser = new ComboBox<>(usernames);
-        userChooser.setPromptText("Użytkownik");
-
-        if (!nameOfCurrentUser.equals("-")) {
-            userChooser.setValue(nameOfCurrentUser);
-        }
-
-        userChooser.setOnAction(e -> {
-            showLoggingInWindow(userChooser.getValue());
-        });
+    protected Button prepareUserChoosingButton() {
+        Button userChooser = new Button("Zaloguj się");
+        userChooser.setOnAction(eh -> showLoggingInWindow());
 
         return userChooser;
     }

@@ -165,7 +165,7 @@ public class MonthView extends SceneCreator {
         mainLayout.setTop(new ToolBar(
                 prepareAddEventButton(),
                 prepareAddUserButton(),
-                prepareUserChooser(),
+                prepareUserChoosingButton(),
                 prepareChangeViewButton(new EventsTableView(mainGUI))
         ));
 

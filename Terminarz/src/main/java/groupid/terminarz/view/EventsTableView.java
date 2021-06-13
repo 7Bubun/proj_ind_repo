@@ -11,7 +11,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToolBar;
@@ -66,7 +65,7 @@ public class EventsTableView extends SceneCreator {
             }
         });
 
-        ComboBox<String> userChooser = prepareUserChooser();
+        Button userChooser = prepareUserChoosingButton();
         Button addEventButton = prepareAddEventButton();
         Button addUserButton = prepareAddUserButton();
         Button changeViewButton = prepareChangeViewButton(new MonthView(mainGUI));
