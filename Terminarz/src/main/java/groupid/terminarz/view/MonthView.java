@@ -29,6 +29,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
@@ -94,7 +95,7 @@ public class MonthView extends SceneCreator {
         Map<Integer, List<MyEvent>> daysAndEvents = new HashMap<>();
         eventsFromCertainMonth.stream().forEach(e -> {
             int day = e.getDeadline().getDay();
-            numberLabels[day - 1].setTextFill(Color.GOLDENROD);
+            numberLabels[day - 1].setTextFill(Color.RED);
             numberLabels[day - 1].setOnMouseClicked(f -> {
                 eventsOfCertainDay = daysAndEvents.get(day);
                 dateOfCertainDay = eventsOfCertainDay.get(0).getDeadline();
@@ -136,7 +137,7 @@ public class MonthView extends SceneCreator {
         }
 
         layout.setGridLinesVisible(true);
-        layout.setPadding(new Insets(10));
+        layout.setPadding(new Insets(10, 30, 5, 30));
         layout.getChildren().addAll(numberLabels);
 
         Button previousMonthButton = new Button("<");
@@ -152,14 +153,15 @@ public class MonthView extends SceneCreator {
         });
 
         Label monthNameLabel = new Label(Utilities.translateMonth(certainMonthObject) + " " + certainYear);
-        monthNameLabel.setMinWidth(790);
+        monthNameLabel.setMinWidth(300);
         monthNameLabel.setStyle("-fx-alignment: CENTER; -fx-font-size: 32px;");
+        FlowPane bottomLayout = new FlowPane();
+        bottomLayout.setAlignment(Pos.CENTER);
+        bottomLayout.getChildren().addAll(previousMonthButton, monthNameLabel, nextMonthButton);
 
         BorderPane mainLayout = new BorderPane();
         mainLayout.setCenter(layout);
-        mainLayout.setBottom(monthNameLabel);
-        mainLayout.setLeft(previousMonthButton);
-        mainLayout.setRight(nextMonthButton);
+        mainLayout.setBottom(bottomLayout);
         mainLayout.setTop(new ToolBar(
                 prepareAddEventButton(),
                 prepareAddUserButton(),
