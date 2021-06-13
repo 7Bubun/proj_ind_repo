@@ -41,8 +41,8 @@ public class DailyEventsAddingWindow extends DailyEventsSpecialWindow {
                 monthView.refreshEventsOfDay();
                 window.close();
 
-            } catch (IOException | SQLException e) {
-                Utilities.popUpErrorBox("Nie udało się załadować danych.");
+            } catch (IOException | NumberFormatException | SQLException e) {
+                Utilities.popUpErrorBox("Niepoprawne dane.");
             }
         });
 

@@ -7,8 +7,6 @@ import java.io.IOException;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -24,11 +22,11 @@ public abstract class SpecialWindow {
     }
 
     public void appear() {
-
+        throw new UnsupportedOperationException();
     }
 
     public void appear(MyEvent event) {
-
+        throw new UnsupportedOperationException();
     }
 
     protected void initWindow(Stage window, Parent layout, String title, int height) {
@@ -46,8 +44,6 @@ public abstract class SpecialWindow {
         gp.setHgap(5);
         return gp;
     }
-
-    
 
     protected TextField[] prepareTextFields() {
         TextField name = new TextField();

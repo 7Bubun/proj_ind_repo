@@ -12,15 +12,12 @@ import java.util.List;
 
 public class DataBaseManager {
 
-    private final String url;
-    private final String dbUsername;
-    private final String dbPassword;
     private final Statement statement;
 
     public DataBaseManager() throws SQLException {
-        url = "jdbc:mysql://192.168.0.120:55555/timetable";
-        dbUsername = "timetable_app";
-        dbPassword = "123q";
+        final String url = "jdbc:mysql://192.168.0.120:55555/timetable";
+        final String dbUsername = "timetable_app";
+        final String dbPassword = "123q";
 
         Connection conn = DriverManager.getConnection(url, dbUsername, dbPassword);
         statement = conn.createStatement();
@@ -31,17 +28,6 @@ public class DataBaseManager {
                 + "VALUES ('" + username + "', '" + password + "')";
 
         executeTheQuery(query);
-    }
-
-    public List<String> loadUsernames() throws SQLException {
-        List<String> usernames = new ArrayList<>();
-        ResultSet results = statement.executeQuery("SELECT USERNAME FROM USERS_TBL");
-
-        while (results.next()) {
-            usernames.add(results.getString(1));
-        }
-
-        return usernames;
     }
 
     public void addEvent(String name, MyDateFormat date, MyTimeFormat time, String username) {

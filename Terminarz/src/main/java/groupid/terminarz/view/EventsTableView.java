@@ -52,16 +52,19 @@ public class EventsTableView extends SceneCreator {
         Button editEventButton = new Button("Edytuj wydarzenie");
         editEventButton.setOnAction(e -> {
             MyEvent editedEvent = layout.getSelectionModel().getSelectedItem();
-            smallWindow = new EventEditingWindow(this);
-            smallWindow.appear(editedEvent);
+
+            if (editedEvent != null) {
+                smallWindow = new EventEditingWindow(this);
+                smallWindow.appear(editedEvent);
+            }
         });
 
         Button deleteEventButton = new Button("Usuń wydarzenie");
         deleteEventButton.setOnAction(e -> {
-            MyEvent editedEvent = layout.getSelectionModel().getSelectedItem();
+            MyEvent event = layout.getSelectionModel().getSelectedItem();
 
-            if (editedEvent != null) {
-                eventsManager.deleteEvent(editedEvent.getId());
+            if (event != null) {
+                eventsManager.deleteEvent(event.getId());
                 mainGUI.refresh();
             }
         });

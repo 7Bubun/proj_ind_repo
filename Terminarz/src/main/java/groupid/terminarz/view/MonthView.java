@@ -171,17 +171,6 @@ public class MonthView extends SceneCreator {
         return new Scene(mainLayout, 800, 600);
     }
 
-    @Override
-    protected Button prepareAddEventButton() {
-        Button aeButton = new Button("Dodaj wydarzenie");
-        aeButton.setOnAction(eh -> {
-            smallWindow = new EventAddingWindow(this);
-            smallWindow.appear();
-        });
-
-        return aeButton;
-    }
-
     private void showEventsOfDay() throws IOException, SQLException {
         BorderPane mainLayout = prepareEventsOfDayLayout();
         MyEvent firstEvent = eventsOfCertainDay.get(0);
@@ -222,20 +211,24 @@ public class MonthView extends SceneCreator {
         editEventButton.setOnAction(eh -> {
             MyEvent editedEvent = centerLayout.getSelectionModel().getSelectedItem();
 
-            smallWindow = new DailyEventsEditingWindow(this);
-            smallWindow.appear(editedEvent);
+            if (editedEvent != null) {
+                smallWindow = new DailyEventsEditingWindow(this);
+                smallWindow.appear(editedEvent);
+            }
         });
 
         Button deleteEventButton = new Button("Usuń");
         deleteEventButton.setOnAction(eh -> {
-            MyEvent editedEvent = centerLayout.getSelectionModel().getSelectedItem();
+            MyEvent event = centerLayout.getSelectionModel().getSelectedItem();
 
-            try {
-                eventsManager.deleteEvent(editedEvent.getId());
-                refreshEventsOfDay();
+            if (event != null) {
+                try {
+                    eventsManager.deleteEvent(event.getId());
+                    refreshEventsOfDay();
 
-            } catch (IOException | SQLException e) {
-                Utilities.popUpErrorBox("Wystąpił błąd.");
+                } catch (IOException | SQLException e) {
+                    Utilities.popUpErrorBox("Wystąpił błąd.");
+                }
             }
         });
 
