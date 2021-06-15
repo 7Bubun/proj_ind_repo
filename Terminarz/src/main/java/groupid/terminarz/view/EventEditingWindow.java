@@ -49,7 +49,7 @@ public class EventEditingWindow extends SpecialWindow {
                 MyDateFormat updatedDeadline = extractDateFromTextFields(textFields);
                 MyTimeFormat updatedTime = extractTimeFromTextFields(textFields);
 
-                if (updatedName.length() > 20) {
+                if (updatedName.length() > 20 || !Utilities.validateDate(updatedDeadline)) {
                     throw new IOException();
                 }
 
@@ -61,7 +61,7 @@ public class EventEditingWindow extends SpecialWindow {
                 window.close();
 
             } catch (IOException | IllegalArgumentException exc) {
-                Utilities.popUpErrorBox("Podane dane nie są poprawne.");
+                Utilities.popUpErrorBox("Niepoprawne dane lub wybrano datę z przeszłości.");
             }
         });
 

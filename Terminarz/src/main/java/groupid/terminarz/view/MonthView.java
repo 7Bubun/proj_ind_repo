@@ -202,6 +202,7 @@ public class MonthView extends SceneCreator {
         hour.setStyle("-fx-alignment: CENTER;");
 
         centerLayout.getColumns().addAll(hour, name);
+        centerLayout.getSortOrder().setAll(hour);
 
         Button addEventButton = new Button("Dodaj");
         addEventButton.setOnAction(eh -> {

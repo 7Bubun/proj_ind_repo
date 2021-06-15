@@ -1,6 +1,7 @@
 package groupid.terminarz.view;
 
 import groupid.terminarz.Utilities;
+import groupid.terminarz.logic.MyDateFormat;
 import groupid.terminarz.logic.MyTimeFormat;
 import static groupid.terminarz.view.SceneCreator.eventsManager;
 import static groupid.terminarz.view.SceneCreator.nameOfCurrentUser;
@@ -36,13 +37,20 @@ public class DailyEventsAddingWindow extends DailyEventsSpecialWindow {
                         Integer.parseInt(minuteField.getText())
                 );
 
-                eventsManager.addEvent(nameField.getText(), monthView.getDateOfCertainDay(), time, nameOfCurrentUser);
+                MyDateFormat date = monthView.getDateOfCertainDay();
+                String name = nameField.getText();
+
+                if (name.length() > 20 || !Utilities.validateDate(date)) {
+                    throw new IOException();
+                }
+
+                eventsManager.addEvent(name, date, time, nameOfCurrentUser);
                 monthView.getMainGUI().refresh();
                 monthView.refreshEventsOfDay();
                 window.close();
 
-            } catch (IOException | NumberFormatException | SQLException e) {
-                Utilities.popUpErrorBox("Niepoprawne dane.");
+            } catch (IOException | IllegalArgumentException | SQLException e) {
+                Utilities.popUpErrorBox("Niepoprawne dane lub wybrano datę z przeszłości.");
             }
         });
 

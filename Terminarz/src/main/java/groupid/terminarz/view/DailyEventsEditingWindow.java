@@ -42,15 +42,21 @@ public class DailyEventsEditingWindow extends DailyEventsSpecialWindow {
                         Integer.parseInt(minuteField.getText())
                 );
 
-                event.setName(nameField.getText());
+                String name = nameField.getText();
+
+                if (name.length() > 20 || !Utilities.validateDate(event.getDeadline())) {
+                    throw new IOException();
+                }
+
+                event.setName(name);
                 event.setTime(time);
                 eventsManager.updateEvent(event);
                 sceneCreator.getMainGUI().refresh();
                 monthView.refreshEventsOfDay();
                 window.close();
 
-            } catch (IOException | SQLException e) {
-                Utilities.popUpErrorBox("Nie udało się załadować danych.");
+            } catch (IOException | IllegalArgumentException | SQLException e) {
+                Utilities.popUpErrorBox("Niepoprawne dane lub wybrano datę z przeszłości.");
             }
         });
 

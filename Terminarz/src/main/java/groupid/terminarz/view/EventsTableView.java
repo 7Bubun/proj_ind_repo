@@ -81,6 +81,8 @@ public class EventsTableView extends SceneCreator {
                 prepareHelpButton()
         ));
 
+        layout.getSortOrder().setAll(deadline, time);
+
         return new Scene(mainLayout, 800, 600);
     }
 }

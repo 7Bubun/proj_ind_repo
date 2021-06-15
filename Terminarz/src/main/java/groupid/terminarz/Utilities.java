@@ -92,6 +92,11 @@ public class Utilities {
         return result;
     }
 
+    public static boolean validateDate(MyDateFormat date) {
+        LocalDate today = LocalDate.now();
+        return LocalDate.of(date.getYear(), date.getMonth(), date.getDay()).compareTo(today) > 0;
+    }
+
     public static void popUpErrorBox(String message) {
         Alert messageBox = new Alert(Alert.AlertType.ERROR);
         messageBox.setContentText(message);

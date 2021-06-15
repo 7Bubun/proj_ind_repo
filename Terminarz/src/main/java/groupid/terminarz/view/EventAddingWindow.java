@@ -33,7 +33,7 @@ public class EventAddingWindow extends SpecialWindow {
                 MyDateFormat deadline = extractDateFromTextFields(textFields);
                 MyTimeFormat time = extractTimeFromTextFields(textFields);
 
-                if (name.length() > 20) {
+                if (name.length() > 20 || !Utilities.validateDate(deadline)) {
                     throw new IOException();
                 }
 
@@ -42,7 +42,7 @@ public class EventAddingWindow extends SpecialWindow {
                 window.close();
 
             } catch (IOException | IllegalArgumentException exc) {
-                Utilities.popUpErrorBox("Podane dane nie są poprawne.");
+                Utilities.popUpErrorBox("Niepoprawne dane lub wybrano datę z przeszłości.");
             }
         });
 
